@@ -1,0 +1,24 @@
+schema_version: 1
+status: draft_pending_coverage_and_manual_audit
+dataset: MASSIVE
+release: "1.1"
+source_url: https://amazon-massive-nlu-dataset.s3.amazonaws.com/amazon-massive-dataset-1.1.tar.gz
+locale: en-US
+partitions: [train, dev, test]
+allowlist_version: productivity-v0
+# Candidate coverage, not a claim that every action is locally executable.
+# Audit before freezing; never infer counts from the complete MASSIVE dataset.
+intents:
+  - alarm_set
+  - alarm_query
+  - alarm_remove
+  - calendar_set
+  - calendar_query
+  - calendar_remove
+  - lists_createoradd
+  - lists_query
+  - lists_remove
+converter_version: massive-annot-v1
+slot_order: annotation_occurrence
+normalization: verbatim-v1
+manual_review_minimum: 100

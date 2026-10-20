@@ -1,0 +1,3 @@
+{"id":"synthetic:1","target":{"intent":"alarm_set","slots":[{"type":"time","value":"five am"}]}}
+{"id":"synthetic:2","target":{"intent":"calendar_query","slots":[]}}
+{"id":"synthetic:3","target":{"intent":"lists_query","slots":[]}}

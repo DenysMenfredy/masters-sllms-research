@@ -1,0 +1,2 @@
+{"id":"synthetic:1","prediction":"{\"slots\":[{\"value\":\"five am\",\"type\":\"time\"}],\"intent\":\"alarm_set\"}"}
+{"id":"synthetic:2","prediction":"{\"intent\":\"calendar_query\",\"slots\":"}

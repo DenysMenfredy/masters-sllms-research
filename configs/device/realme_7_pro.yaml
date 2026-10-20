@@ -1,0 +1,34 @@
+schema_version: 1
+status: specification_only_not_measured
+expected_device:
+  name: Realme 7 Pro
+  physical_ram_gb: 8
+  chipset: Snapdragon 720G
+  gpu: Adreno 618
+measured:
+  model_identifier: null
+  android_version: null
+  api_level: null
+  firmware_fingerprint: null
+  abi: null
+  physical_memory_mib: null
+  available_memory_mib: null
+runtime:
+  name: llama.cpp
+  commit: null
+  backend_requested: cpu
+  actual_offloaded_layers: null
+  cpu_threads: null
+  context_tokens: null
+  batch_tokens: null
+  kv_cache_type: null
+  build_flags: null
+session_controls:
+  power_saving: null
+  brightness: null
+  screen_state: null
+  charging: null
+  case_usage: null
+  background_workload: null
+  battery_range_percent: null
+  ambient_temperature_celsius: null

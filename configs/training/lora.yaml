@@ -1,0 +1,24 @@
+schema_version: 1
+status: starting_recipe_not_validated
+method: lora
+fallback: qlora
+rank_trials: [8, 16]
+selected_rank: null
+alpha: null
+dropout: null
+learning_rate: 0.0001
+max_epochs: 3
+effective_batch_size: 16
+micro_batch_size: null
+gradient_accumulation_steps: null
+max_sequence_length: null  # Set from the tokenizer and prompt length audit.
+target_modules: null  # Record exact supported linear modules for the selected architecture.
+loss_scope: response_tokens_only
+checkpoint_selection_metric: validation_joint_semantic_exact_match
+max_substantive_development_trials: 2
+final_seeds: [17, 42, 73]
+training_compute:
+  provider: null
+  gpu: null
+  spend_currency: null
+  spend_cap: null

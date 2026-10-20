@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "Slot": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Type",
+          "type": "string"
+        },
+        "value": {
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "title": "Slot",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "intent": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Intent",
+      "type": "string"
+    },
+    "slots": {
+      "items": {
+        "$ref": "#/$defs/Slot"
+      },
+      "title": "Slots",
+      "type": "array"
+    }
+  },
+  "required": [
+    "intent",
+    "slots"
+  ],
+  "title": "SemanticAction",
+  "type": "object"
+}

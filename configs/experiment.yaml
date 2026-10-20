@@ -1,0 +1,46 @@
+schema_version: 1
+status: draft
+study: english-offline-productivity
+plan_version: "1.1"
+start_date: "2026-10-20"
+end_date: "2026-12-14"
+locale: en-US
+primary_model: null  # Select only after the G1 training-to-phone pilot.
+final_training_seeds: [17, 42, 73]
+quantizations: [Q4_K_M, Q8_0]
+required_backend: cpu
+optional_gpu_probe_budget_hours: 8
+primary_metric: joint_semantic_exact_match
+normalization: verbatim-v1
+quality_bootstrap:
+  method: paired_stratified_by_intent
+  replicates: 10000
+  confidence_level: 0.95
+  random_seed: 20261020
+performance:
+  panel_target_size: 200
+  independent_sessions: 3
+  batch_size: 1
+  sustained_duration_seconds: 1200
+  sustained_adapted_seed: 17  # Preselected before final testing.
+  timeout_seconds: null
+  memory_sampling_interval_ms: null
+  cooldown_rule: null
+  artifact_order_random_seed: 20261020
+requirements:
+  joint_semantic_exact_match_min: null
+  meaningful_adaptation_gain_percentage_points: null
+  request_latency_p95_seconds_max: null
+  peak_process_memory_mib_max: null
+  failure_rate_max: null
+  sustained_degradation_max: null
+  unset_threshold_policy: report_measured_frontier
+application:
+  reference_datetime: "2026-10-20T09:00:00-03:00"
+  timezone: America/Belem
+  execute_actions: false
+gates:
+  G1_verified_training_to_phone: false
+  G2_dataset_and_protocol_frozen: false
+  G3_training_recipe_frozen: false
+  G4_artifacts_frozen: false
