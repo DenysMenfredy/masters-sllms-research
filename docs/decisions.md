@@ -37,3 +37,18 @@ performance experiments.
 Initial audits produce train/dev records and test metadata only. Keep official
 partitions, reject repeated source IDs, and report duplicate utterances without
 automatic deletion. Near-duplicate and manual reviews remain mandatory at G2.
+
+## D007 - Google Colab for training
+
+The researcher will train/fine-tune on Google Colab because the local GPU is
+insufficient. Keep local development lightweight and use Colab's CUDA-enabled Torch
+with a separate interpreter containing pinned user-space packages. Persist run
+artifacts/checkpoints in Drive and support resume from completed checksum-verified
+checkpoints. Record the actual runtime environment instead of claiming Colab uses
+the workstation's complete Torch/CUDA lock.
+
+The default is a two-step LoRA smoke test. Full trials/final runs retain G1/G2/G3
+requirements and the three fixed final seeds. Development checkpoint selection
+uses generated joint semantic exact match. QLoRA remains an explicit NF4 fallback;
+merge reloads unquantized base weights and checks development canaries. Colab and
+real-model GPU execution remain unverified until the researcher runs the pilots.

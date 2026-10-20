@@ -18,7 +18,7 @@ checkpoint_selection_metric: validation_joint_semantic_exact_match
 max_substantive_development_trials: 2
 final_seeds: [17, 42, 73]
 training_compute:
-  provider: null
+  provider: google_colab
   gpu: null
   spend_currency: null
   spend_cap: null

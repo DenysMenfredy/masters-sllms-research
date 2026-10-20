@@ -20,9 +20,10 @@ phone is connected. Environment timestamps are UTC; study dates use America/Bele
 
 The initial host has CMake and uv. The NVIDIA driver probe fails; ADB and Ninja are
 absent and no NDK was configured. CPU data and scoring development works independently.
-Provision a compatible training GPU before a smoke run; do not install arbitrary
-CUDA drivers as part of project bootstrap. The training extra is a locked candidate
-stack, not an established GPU or Qwen3.5 pipeline.
+Use [the Colab training workflow](colab.md) for GPU work; no local GPU upgrade is
+needed. Its bootstrap preserves the Colab image's Torch/CUDA and installs pinned
+user-space training libraries in a separate interpreter. Workstation training extras
+remain optional. Real-model GPU and Qwen3.5 feasibility still require smoke pilots.
 
 Optional cache settings:
 

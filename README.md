@@ -7,11 +7,21 @@ Realme 7 Pro using English calendar, alarm, and list requests.
 
 ## Current implementation
 
-The initial development environment, experiment configurations, canonical semantic
-schema, official MASSIVE annotation converter, draft data audit, and semantic scorer
-are implemented. Training, model export, inference, specialist baselines, and device
-benchmarking are upcoming work. No model quality or device performance is claimed.
+The development environment, experiment configurations, semantic schema, MASSIVE
+converter/audit, scorer, Colab LoRA/QLoRA entry points, resumable checkpoints, and
+high-precision adapter merge are implemented. GGUF export, Android inference,
+specialist baselines, and device benchmarking are upcoming work. No model quality
+or device performance is claimed.
 G1 through G4 remain open; installing packages does not establish model feasibility.
+
+## Train on Google Colab
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/DenysMenfredy/masters-sllms-research/blob/main/notebooks/colab_finetune.ipynb)
+
+Follow [the Colab guide](docs/colab.md) and run the notebook in order with a GPU
+runtime. It starts with a two-step smoke test and saves checkpoints/results to
+Drive. Full trials/final seeds require the documented research gates. Local
+development does not need a GPU.
 
 ## Start here
 
@@ -36,7 +46,7 @@ prediction, and one missing prediction: joint exact match and validity are both 
 Optional environments use the same lockfile:
 
 ```bash
-# GPU workstation only, after checking CUDA/driver compatibility:
+# Optional GPU workstation; Colab uses the documented separate bootstrap:
 UV_CACHE_DIR="$PWD/.cache/uv" uv sync --locked --group dev --extra training
 # QLoRA fallback, if needed:
 UV_CACHE_DIR="$PWD/.cache/uv" uv sync --locked --group dev --extra training --extra qlora
@@ -44,8 +54,8 @@ UV_CACHE_DIR="$PWD/.cache/uv" uv sync --locked --group dev --extra training --ex
 UV_CACHE_DIR="$PWD/.cache/uv" uv sync --locked --group dev --extra analysis
 ```
 
-Extras are resolved and locked, but only the default development environment has
-been installed and checked. `uv sync` installs the requested extras exactly; include
+The project's default `.venv` stays lightweight; Colab uses its separate bootstrap.
+`uv sync` installs the requested extras exactly; include
 all desired `--extra` flags together to keep them installed. Do not use the global
 Conda environment as the experiment environment. Review the optional settings in
 `.env.example`; commands do not load `.env` automatically.
@@ -55,6 +65,7 @@ Conda environment as the experiment environment. Review the optional settings in
 ```text
 configs/                 Draft experiment, data, model, training, and device configs
 src/sllm_research/        Working CLI, semantics, MASSIVE conversion, scoring, doctor
+notebooks/               Colab training, resume, diagnostics, and merge workflow
 data/raw/                Original downloads (ignored)
 data/processed/          Regenerable audits and converted examples (ignored)
 data/manifests/          Reviewed, versioned split IDs, schemas, and provenance

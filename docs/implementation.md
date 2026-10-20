@@ -11,6 +11,15 @@
 - Host diagnostics, raw ADB inventory helper, and pinned-source CPU build helper.
 - Draft protocol, decision log, experiment diary, source register, and writing outlines.
 
+## Colab training implementation
+
+- GPU notebook with environment preflight, official data acquisition/audit and Drive storage.
+- Pinned training packages while preserving the Colab image's Torch/CUDA distribution.
+- Response-only LoRA/NF4 QLoRA entry point with deterministic panels and length checks.
+- Generated dev scoring, semantic checkpoint selection and complete checkpoint resume.
+- High-precision base reload, adapter merge, canary checks and artifact checksums.
+- Local tiny-model CPU training/resume/merge integration check; real GPU pilots pending.
+
 ## G1: first verified training-to-phone path (20-26 October)
 
 - [ ] Inventory the actual phone and fill firmware/ABI/device controls.

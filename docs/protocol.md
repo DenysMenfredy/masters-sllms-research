@@ -68,8 +68,9 @@ Predeclare thresholds, timeouts, memory sampling, cooling, and device/power cont
 before final tests. Their `null` config values are open decisions, not zero limits.
 If there are no product thresholds, report the measured quality/latency/memory
 frontier. A paired intent-stratified 10,000-replicate bootstrap and seed/session
-variation are planned; inference, bootstrap, aggregation, and device benchmarks are
-not implemented by this scaffold.
+variation are planned. Training now generates development diagnostics and selects
+adapters by semantic correctness; Android inference, paired bootstrap, aggregation,
+and device benchmarks remain pending.
 
 ## Request logging contract to implement
 

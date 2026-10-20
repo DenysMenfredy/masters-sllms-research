@@ -24,3 +24,16 @@ Candidate revision metadata was read from
 `https://huggingface.co/api/models/Qwen/Qwen3-0.6B` and
 `https://huggingface.co/api/models/Qwen/Qwen3.5-0.8B`; the returned commits are in
 `configs/models/candidates.yaml`. Metadata pinning is not model execution validation.
+
+Colab implementation references, checked on the same date:
+
+- [Colab FAQ](https://research.google.com/colaboratory/faq.html): GPU/session
+  variability, persistent storage, and Drive I/O behavior.
+- [Colab runtime versions](https://research.google.com/colaboratory/runtime-version-faq.html):
+  selecting a past image and the documented 2026.07 Python/Torch versions.
+- [Transformers Trainer](https://huggingface.co/docs/transformers/main_classes/trainer):
+  training/checkpoint lifecycle. API compatibility is checked against the locked version.
+- [PEFT quantization](https://huggingface.co/docs/peft/developer_guides/quantization):
+  NF4 preparation and adapter training. This is separate from GGUF quantization.
+- [Locked Qwen3.5 implementation](https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py):
+  dedicated causal text model class. Actual pretrained loading/export requires the pilot.

@@ -28,3 +28,4 @@ android/build/
 *.pt
 *.pth
 *.onnx
+.ipynb_checkpoints/

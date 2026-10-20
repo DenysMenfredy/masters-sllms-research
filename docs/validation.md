@@ -37,3 +37,23 @@ UV_CACHE_DIR="$PWD/.cache/uv" uv pip check --python .venv/bin/python
 make check
 make smoke
 ```
+
+## Colab implementation checks
+
+The default lightweight environment passes 33 tests; one optional ML integration
+test skips because Torch is intentionally absent. Ruff checks include the notebook.
+All code cells parse as Python and have no saved execution outputs.
+
+A temporary environment with the exported user-space pins and the host's inherited
+Torch 2.13.0+cu130 separately passes the integration test using a tiny randomly
+initialized Qwen3 model and local tokenizer. It exercises two optimizer steps,
+generated semantic validation, adapter selection, checkpoint state/checksums,
+resume after interrupted finalization, high-precision reload, adapter merge, saved
+weights and matching before/after canary outputs. No model/dataset download or
+CUDA execution is involved. The CPU test is not a real-model quality experiment.
+
+The integration check caught and fixed inherited old Datasets incompatibility and
+the removed `TrainingArguments.save_safetensors` option in the pinned Transformers
+version. Colab GPU, mixed precision, bitsandbytes QLoRA, real Qwen3.5 weights and
+phone export still require pilot validation. Colab intentionally inherits Torch/CUDA
+from its runtime image; its actual environment is saved in each run's provenance.

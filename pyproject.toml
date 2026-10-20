@@ -24,6 +24,8 @@ analysis = ["numpy>=2,<3", "pandas>=2.2,<4", "scipy>=1.15,<2", "matplotlib>=3.10
 
 [project.scripts]
 sllm = "sllm_research.cli:main"
+sllm-train = "sllm_research.finetune:main"
+sllm-merge = "sllm_research.merge_adapter:main"
 
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]

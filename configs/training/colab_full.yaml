@@ -1,0 +1,18 @@
+# Template only. Set mode to trial or final after the corresponding research gates.
+mode: trial
+method: lora
+rank: 8
+alpha: 16
+dropout: 0.05
+learning_rate: 0.0001
+epochs: 3
+micro_batch_size: 1
+gradient_accumulation_steps: 16
+max_sequence_length: 512  # Confirm using the saved tokenizer length audit.
+max_new_tokens: 128
+max_steps: -1
+train_limit: null
+dev_limit: null
+save_steps: 100
+gradient_checkpointing: true
+target_modules: [q_proj, k_proj, v_proj, o_proj]
