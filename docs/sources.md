@@ -37,3 +37,14 @@ Colab implementation references, checked on the same date:
   NF4 preparation and adapter training. This is separate from GGUF quantization.
 - [Locked Qwen3.5 implementation](https://github.com/huggingface/transformers/blob/v5.20.2/src/transformers/models/qwen3_5/modeling_qwen3_5.py):
   dedicated causal text model class. Actual pretrained loading/export requires the pilot.
+
+CUDA profile repair references:
+
+- [Official Torch CUDA 12.6 wheels](https://download.pytorch.org/whl/cu126/torch/):
+  `2.14.1+cu126` wheels for supported Python/OS combinations.
+- [NVIDIA CUDA release notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html):
+  CUDA 12.6 GA Linux driver requirement 560.28.03.
+- [NVIDIA compatibility guide](https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html):
+  driver/runtime compatibility, including newer drivers running older runtimes.
+- [bitsandbytes installation](https://huggingface.co/docs/bitsandbytes/installation):
+  CUDA 12.6 support and NF4 hardware requirements. GPU execution still needs a pilot.

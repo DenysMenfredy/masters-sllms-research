@@ -14,7 +14,7 @@
 ## Colab training implementation
 
 - GPU notebook with environment preflight, official data acquisition/audit and Drive storage.
-- Pinned training packages while preserving the Colab image's Torch/CUDA distribution.
+- Dedicated hash-locked Torch 2.14.1 CUDA 12.6 stack in an isolated interpreter.
 - Response-only LoRA/NF4 QLoRA entry point with deterministic panels and length checks.
 - Generated dev scoring, semantic checkpoint selection and complete checkpoint resume.
 - High-precision base reload, adapter merge, canary checks and artifact checksums.

@@ -161,7 +161,11 @@ def run_training(args) -> dict:
     dtype = (
         torch.float32
         if args.cpu_smoke
-        else (torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16)
+        else (
+            torch.bfloat16
+            if torch.cuda.is_bf16_supported(including_emulation=False)
+            else torch.float16
+        )
     )
     if args.resume and saved["dtype"] != str(dtype):
         raise ValueError("Resume GPU would change training precision; use the original GPU class")

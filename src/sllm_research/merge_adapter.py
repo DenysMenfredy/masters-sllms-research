@@ -26,7 +26,7 @@ def merge_run(run: Path, output: Path, dev: Path) -> dict:
         raise FileExistsError("Choose a new merged output directory")
     dtype = (
         torch.bfloat16
-        if torch.cuda.is_available() and torch.cuda.is_bf16_supported()
+        if torch.cuda.is_available() and torch.cuda.is_bf16_supported(including_emulation=False)
         else (torch.float16 if torch.cuda.is_available() else torch.float32)
     )
     device = "cuda:0" if torch.cuda.is_available() else "cpu"

@@ -52,3 +52,17 @@ requirements and the three fixed final seeds. Development checkpoint selection
 uses generated joint semantic exact match. QLoRA remains an explicit NF4 fallback;
 merge reloads unquantized base weights and checks development canaries. Colab and
 real-model GPU execution remain unverified until the researcher runs the pilots.
+
+## D008 - isolated CUDA profile supersedes inherited Colab packages
+
+A reported Colab bootstrap failure prompted checking the pinned requirements as a
+complete stack. Replace D007's system-package inheritance with an isolated venv and
+a dedicated resolved lock: Torch 2.14.1+cu126, Accelerate 1.15.0, Transformers 5.20.2,
+PEFT 0.21.2 and optional bitsandbytes 0.50.2. Install hash-checked requirements and
+run `pip check`, then an actual tiny GPU LoRA optimizer step through Accelerate.
+Use the official CUDA 12.6 wheel and require a compatible host driver. Preserve the
+notebook kernel and Drive artifacts; use the new training interpreter path.
+
+The supplied message contained the failing cell without the underlying traceback,
+so a specific original exception was not established. The new path removes ambient
+package coupling and checks both dependencies and GPU computation explicitly.

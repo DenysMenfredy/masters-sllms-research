@@ -123,5 +123,6 @@ def test_notebook_cells_are_valid_python_with_no_saved_outputs():
     assert notebook["nbformat"] == 4
     for cell in notebook["cells"]:
         if cell["cell_type"] == "code":
-            ast.parse(cell["source"])
+            source = cell["source"]
+            ast.parse("".join(source) if isinstance(source, list) else source)
             assert cell["execution_count"] is None and not cell["outputs"]

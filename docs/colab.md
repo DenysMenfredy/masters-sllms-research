@@ -33,34 +33,79 @@ GPU type or session length. No paid plan or compute purchase is made by the note
 For a private repository, opening the notebook and cloning code require your own
 authenticated GitHub access. Never embed tokens in a notebook or committed URL.
 
+## Upgrade an older notebook after a setup failure
+
+Open the updated GitHub-backed notebook; saved Colab copies keep their old cells.
+Choose a GPU runtime and rerun the fetch and setup cells. The new interpreter is
+`/content/sllm-cu126-venv/bin/python`. Setup probes `nvidia-smi` first and imports
+Torch from its isolated training environment afterward. If adapting an existing
+notebook, replace the old setup cell with this after fetching the updated code:
+
+```python
+PYTHON = Path("/content/sllm-cu126-venv/bin/python")
+bootstrap = [sys.executable, "training/colab/bootstrap.py", "--environment", PYTHON.parent.parent]
+if USE_QLORA:
+    bootstrap.append("--qlora")
+run(bootstrap)
+```
+
+Use a new run ID if an earlier training run used different library versions.
+The dataset and checkpoints in Drive are preserved across environment setup.
+
 ## Environment and precision
 
-`training/colab/bootstrap.py` creates `/content/sllm-venv` with access to preinstalled
-system packages. It installs exact user-space pins from
-`training/colab/requirements.txt`, generated from `uv.lock`. It constrains Torch to
-its original installed distribution version and verifies Torch's version/path,
-CUDA availability and GPU name afterward. CUDA/NVIDIA/Triton packages are omitted
-from this export; they come from Colab's image. A compatible Datasets version is
-pinned because Trainer can import an inherited installation even with JSONL input.
+`training/colab/pyproject.toml` and its dedicated `uv.lock` define one resolved
+Linux x86_64 / Python 3.11-3.12 CUDA profile. Its exact pins are:
 
-The notebook kernel stays unchanged. All training cells call the separate Python
-interpreter, so no kernel restart is required. The Colab stack intentionally differs
-from full workstation `uv sync --extra training` in Torch/CUDA packages. Every run
-saves `pip-freeze.txt`, CUDA version, GPU name, dtype, recipe, model/code revisions,
-template hash and data hashes. Record the chosen runtime version in the diary.
-Use the same runtime image and exact repository commit for final runs and resume.
-The notebook prints its resolved commit; `run.json` also retains it. A moving `main`
-is a first-run convenience, not a reproducibility pin.
+| Component | Version |
+| --- | --- |
+| PyTorch | `2.14.1+cu126` |
+| Bundled CUDA runtime | `12.6.77` (`torch.version.cuda` reports `12.6`) |
+| Accelerate | `1.15.0` |
+| Transformers | `5.20.2` |
+| PEFT | `0.21.2` |
+| Datasets | `4.8.5` |
+| Optional bitsandbytes | `0.50.2` |
 
-LoRA is the default. Training uses BF16 when supported by the allocated GPU,
+The CUDA-specific Torch wheel is listed in the
+[official PyTorch index](https://download.pytorch.org/whl/cu126/torch/). The explicit
+`+cu126` pin prevents the resolver from selecting a CPU or CUDA 13 build. The host
+must expose an NVIDIA GPU with Linux driver **560.28.03 or newer**, the conservative
+CUDA 12.6 GA requirement in NVIDIA's
+[release notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html).
+Driver selection belongs to the Colab runtime; pip does not install a host driver.
+The CUDA version displayed by `nvidia-smi` may be newer than the wheel's runtime
+because NVIDIA supports backward-compatible drivers.
+
+`bootstrap.py` creates a venv without system-package inheritance. It installs the
+full hash-locked requirements, including Torch/CUDA libraries, and runs `pip check`.
+This removes ambient Torch/Accelerate/vision/audio/TensorFlow package combinations
+from the training interpreter. The notebook kernel stays unchanged. All training
+commands use the separate interpreter, so no kernel restart is required.
+
+`verify_cuda.py` prints versions and locations, checks the exact Torch build/CUDA
+runtime, and executes a tiny Qwen3 LoRA forward/backward/optimizer step through
+Accelerate with the GPU's supported mixed precision. QLoRA setup also executes an
+NF4 backward pass. This checks imports and actual kernels before downloading a
+candidate model. Package resolution alone does not establish GPU feasibility.
+
+The dedicated lock is separate from the workstation lock, whose default Torch may
+use a different CUDA build. Every run saves `pip-freeze.txt`, CUDA version, GPU name,
+dtype, recipe, model/code revisions, template and data hashes. Setup also saves its
+profile/checksum in the venv's `sllm-environment.json`. Record the runtime image in
+the diary; use the same image and exact code commit for final runs and resume.
+The notebook prints its resolved commit and saves it in `run.json`.
+
+LoRA is the default. Training uses BF16 when natively supported by the allocated GPU,
 otherwise FP16. CPU infrastructure checks use FP32. QLoRA is an explicit NF4 memory
 fallback with double quantization. Set `USE_QLORA=True` for setup and training and
 use a new run ID. NF4 training is separate from deployment Q4_K_M/Q8_0 precision.
 
-After an intentional dependency update, regenerate the Colab export:
+After an intentional change to the dedicated Colab profile, regenerate both the
+base and QLoRA hash-locked exports:
 
 ```bash
-UV_CACHE_DIR="$PWD/.cache/uv" uv lock
+UV_CACHE_DIR="$PWD/.cache/uv" uv lock --project training/colab
 UV_CACHE_DIR="$PWD/.cache/uv" .venv/bin/python training/colab/export_requirements.py
 ```
 
@@ -195,7 +240,9 @@ not phone latency/memory results.
 | --- | --- |
 | CUDA unavailable | Select a GPU runtime, reconnect and rerun setup |
 | Unsupported Python | Select the documented compatible past runtime version |
-| Import/dependency conflict | Start a fresh runtime and use the bootstrap |
+| Import/dependency conflict | Open the updated notebook and use the isolated CUDA bootstrap |
+| Driver below 560.28.03 | Choose a newer Colab GPU runtime; package installation cannot update the host driver |
+| Kernel Torch assertion fails in an old cell | Replace the setup cell as documented above and fetch the updated code |
 | Output exists | Restore exactly with `RESUME=True`, or choose a new run ID |
 | No complete checkpoint | Start a new run; interruption preceded a complete save |
 | Out of memory | Reduce micro-batch and adjust accumulation to retain effective batch size; audit length; explicitly choose a new QLoRA run if needed |

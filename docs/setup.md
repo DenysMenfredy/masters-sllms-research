@@ -21,8 +21,8 @@ phone is connected. Environment timestamps are UTC; study dates use America/Bele
 The initial host has CMake and uv. The NVIDIA driver probe fails; ADB and Ninja are
 absent and no NDK was configured. CPU data and scoring development works independently.
 Use [the Colab training workflow](colab.md) for GPU work; no local GPU upgrade is
-needed. Its bootstrap preserves the Colab image's Torch/CUDA and installs pinned
-user-space training libraries in a separate interpreter. Workstation training extras
+needed. Its bootstrap installs the dedicated Torch 2.14.1 CUDA 12.6 profile and
+training libraries in an isolated interpreter. Workstation training extras
 remain optional. Real-model GPU and Qwen3.5 feasibility still require smoke pilots.
 
 Optional cache settings:
