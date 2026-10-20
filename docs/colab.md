@@ -52,6 +52,41 @@ run(bootstrap)
 Use a new run ID if an earlier training run used different library versions.
 The dataset and checkpoints in Drive are preserved across environment setup.
 
+If an older fetch cell stops with **Repository has local changes**, run this once
+to save tracked edits and untracked files, then rerun the fetch and setup cells:
+
+```python
+run(
+    [
+        "git",
+        "-c",
+        "user.name=SLLM Colab",
+        "-c",
+        "user.email=colab@localhost",
+        "stash",
+        "push",
+        "--include-untracked",
+        "--message",
+        "sllm-colab-before-update",
+    ]
+)
+```
+
+The updated notebook fetches the requested revision first, shows changed filenames,
+and automatically saves a named Git stash before checkout. It prints the stash
+hash and inspection/restoration commands. Ignored data and caches stay in place.
+If fetching or stashing fails, checkout does not proceed. Local edits saved in the
+stash are excluded from the updated run until deliberately restored.
+
+Inspect backups with `run(["git", "stash", "list"])` and
+`run(["git", "stash", "show", "--include-untracked", "--stat", "stash@{0}"])`.
+Restore selected changes after fetching and before training. For exact recovery,
+check out the backup's original commit (`git checkout --detach <backup-hash>^1`)
+and use `git stash apply --index <backup-hash>`; this also restores staged state.
+For a resumed run, the code revision and tracked edits must match the saved run.
+Stashes live in this VM's Git repository; export wanted edits before deleting the
+runtime. Drive remains the persistent home for datasets, checkpoints and results.
+
 If setup failed with `ensurepip ... returned non-zero exit status 1`, fetch the
 repair and rerun the existing bootstrap command in the same notebook:
 
@@ -257,6 +292,7 @@ not phone latency/memory results.
 | --- | --- |
 | CUDA unavailable | Select a GPU runtime, reconnect and rerun setup |
 | Unsupported Python | Select the documented compatible past runtime version |
+| Legacy fetch cell reports local changes | Save a stash with the recovery cell above, then rerun fetch/setup; the updated notebook does this automatically |
 | `venv` fails while invoking `ensurepip` | Fetch the repair and rerun `run(bootstrap)` as documented above; the partial environment is reused |
 | Import/dependency conflict | Open the updated notebook and use the isolated CUDA bootstrap |
 | Driver below 560.28.03 | Choose a newer Colab GPU runtime; package installation cannot update the host driver |

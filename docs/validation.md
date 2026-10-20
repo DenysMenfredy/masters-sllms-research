@@ -95,3 +95,18 @@ the new helper, checked with `pip check`, and bootstrapped again successfully.
 The check confirmed interpreter isolation and no inherited Torch, then removed the
 temporary environment. This validates environment creation and reruns; Python 3.12
 on the user's Colab image and actual CUDA execution still require their setup run.
+
+## Colab checkout recovery checks
+
+The supplied traceback stops in the notebook's blanket dirty-checkout guard. It
+does not identify which files changed. The fetch cell now lists changes and saves
+tracked edits and untracked files to a named Git stash before checking out the
+requested revision. It prints the backup hash and recovery commands.
+
+Four tests execute the actual notebook fetch cell against temporary local Git
+repositories. They cover a fresh shallow clone, an upstream update with staged
+and unstaged edits, deletion and a new binary file, ignored data preservation,
+exact stash restoration, repeated setup, failed fetches, and unresolved merge
+conflicts. Failed fetches/stashes leave the checkout revision unchanged. No remote
+network access or GPU is needed. The full suite passes 47 tests with the optional
+ML integration test skipped; Ruff lint/format and notebook syntax checks pass.

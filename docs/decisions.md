@@ -74,3 +74,12 @@ An A100 Colab session passed the driver check but failed inside Python 3.12's
 option to install pinned pip into the isolated interpreter. Reuse partial
 environments so rerunning setup repairs this failure. Continue with the existing
 hash-locked CUDA profile, dependency check and GPU compute probe.
+
+## D010 - save local Colab edits before updating code
+
+Replace the blanket dirty-checkout failure with a named Git stash containing
+tracked edits and untracked files. Fetch first, list changes, print the backup
+hash and recovery commands, and only check out after saving succeeds and the
+working tree is clean. Run the requested revision with saved edits excluded until
+deliberate restoration. Keep ignored data/caches in place and document that stash
+backups share the VM's lifetime. Resume still requires matching code and edits.

@@ -53,3 +53,5 @@ CUDA profile repair references:
   are reused.
 - [pip interpreter selection](https://pip.pypa.io/en/stable/topics/python-option/):
   pip 22.3+ can manage another interpreter, including a venv without pip installed.
+- [Git stash](https://git-scm.com/docs/git-stash): saving tracked/untracked changes,
+  inspecting a backup and restoring staged state with `apply --index`.
