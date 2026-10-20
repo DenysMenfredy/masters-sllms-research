@@ -69,9 +69,30 @@ def test_isolated_install_and_compute_probe_do_not_depend_on_kernel_torch(
     assert "PYTHONPATH" not in install[1]["env"]
     assert "--system-site-packages" not in str(calls)
     commands = [command for command, _ in calls]
+    assert any("--without-pip" in command for command in commands)
+    assert any("--python" in command and "pip==26.2" in command for command in commands)
     assert any(command[-2:] == ["pip", "check"] for command in commands)
     assert any("verify_cuda.py" in str(command) for command in commands)
     assert (environment / "sllm-environment.json").exists()
+
+
+def test_recovers_partially_created_environment_without_ensurepip(tmp_path, monkeypatch):
+    environment = tmp_path / "partial-environment"
+    environment.mkdir()
+    (environment / "pyvenv.cfg").write_text("include-system-site-packages = false\n")
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        if command[1:3] == ["-m", "venv"] and "--without-pip" not in command:
+            raise subprocess.CalledProcessError(1, command, stderr="ensurepip failed")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(bootstrap.subprocess, "run", fake_run)
+    python = bootstrap.create_environment(environment, {})
+    assert python == str(environment / "bin/python")
+    seed = next(command for command in calls if "--python" in command)
+    assert seed[seed.index("--python") + 1] == python
 
 
 def test_cuda_profile_exports_keep_exact_gpu_build_and_hashes():

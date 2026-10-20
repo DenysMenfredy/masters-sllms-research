@@ -52,6 +52,18 @@ run(bootstrap)
 Use a new run ID if an earlier training run used different library versions.
 The dataset and checkpoints in Drive are preserved across environment setup.
 
+If setup failed with `ensurepip ... returned non-zero exit status 1`, fetch the
+repair and rerun the existing bootstrap command in the same notebook:
+
+```python
+run(["git", "fetch", "origin", "main"])
+run(["git", "checkout", "--detach", "FETCH_HEAD"])
+run(bootstrap)
+```
+
+The repaired setup reuses the partially created environment. It needs no system
+package installation or kernel restart.
+
 ## Environment and precision
 
 `training/colab/pyproject.toml` and its dedicated `uv.lock` define one resolved
@@ -77,8 +89,13 @@ Driver selection belongs to the Colab runtime; pip does not install a host drive
 The CUDA version displayed by `nvidia-smi` may be newer than the wheel's runtime
 because NVIDIA supports backward-compatible drivers.
 
-`bootstrap.py` creates a venv without system-package inheritance. It installs the
-full hash-locked requirements, including Torch/CUDA libraries, and runs `pip check`.
+`bootstrap.py` creates a venv without system-package inheritance using
+`venv --without-pip`. This bypasses Colab images with unavailable or failing
+`ensurepip`. The notebook's pip (22.3 or newer) uses its
+[`--python` option](https://pip.pypa.io/en/stable/topics/python-option/) to install
+`pip==26.2` into the training interpreter. Subsequent installs use that interpreter's
+pip. Setup installs the full hash-locked requirements, including Torch/CUDA
+libraries, and runs `pip check`.
 This removes ambient Torch/Accelerate/vision/audio/TensorFlow package combinations
 from the training interpreter. The notebook kernel stays unchanged. All training
 commands use the separate interpreter, so no kernel restart is required.
@@ -240,6 +257,7 @@ not phone latency/memory results.
 | --- | --- |
 | CUDA unavailable | Select a GPU runtime, reconnect and rerun setup |
 | Unsupported Python | Select the documented compatible past runtime version |
+| `venv` fails while invoking `ensurepip` | Fetch the repair and rerun `run(bootstrap)` as documented above; the partial environment is reused |
 | Import/dependency conflict | Open the updated notebook and use the isolated CUDA bootstrap |
 | Driver below 560.28.03 | Choose a newer Colab GPU runtime; package installation cannot update the host driver |
 | Kernel Torch assertion fails in an old cell | Replace the setup cell as documented above and fetch the updated code |

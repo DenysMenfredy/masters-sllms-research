@@ -66,3 +66,11 @@ notebook kernel and Drive artifacts; use the new training interpreter path.
 The supplied message contained the failing cell without the underlying traceback,
 so a specific original exception was not established. The new path removes ambient
 package coupling and checks both dependencies and GPU computation explicitly.
+
+## D009 - create Colab environments without ensurepip
+
+An A100 Colab session passed the driver check but failed inside Python 3.12's
+`venv` pip-seeding step. Use `venv --without-pip`, then the notebook's pip `--python`
+option to install pinned pip into the isolated interpreter. Reuse partial
+environments so rerunning setup repairs this failure. Continue with the existing
+hash-locked CUDA profile, dependency check and GPU compute probe.

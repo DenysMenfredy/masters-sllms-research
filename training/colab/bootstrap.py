@@ -11,6 +11,38 @@ import sys
 import tomllib
 from pathlib import Path
 
+BOOTSTRAP_PIP_VERSION = "26.2"
+
+
+def create_environment(environment: Path, child_env: dict) -> str:
+    # Colab's distro Python can have venv but no working ensurepip. Build the
+    # environment without seeding, then let the notebook's pip target it directly.
+    subprocess.run(
+        [sys.executable, "-m", "venv", "--without-pip", str(environment)],
+        env=child_env,
+        check=True,
+    )
+    configuration = (environment / "pyvenv.cfg").read_text().lower()
+    if "include-system-site-packages = false" not in configuration:
+        raise RuntimeError("Training interpreter still inherits system packages; use a fresh path")
+    python = str(environment / "bin/python")
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "--python",
+            python,
+            "install",
+            "--no-cache-dir",
+            "--only-binary=:all:",
+            f"pip=={BOOTSTRAP_PIP_VERSION}",
+        ],
+        env=child_env,
+        check=True,
+    )
+    return python
+
 
 def version_tuple(value: str) -> tuple[int, ...]:
     return tuple(int(part) for part in value.strip().split("."))
@@ -57,17 +89,11 @@ def bootstrap(environment: Path, qlora: bool) -> None:
     profile = tomllib.loads((profile_dir / "pyproject.toml").read_text())["tool"]["sllm"]["cuda"]
     drivers = inspect_driver(profile["minimum_linux_driver"])
     print(json.dumps({"profile": profile, "driver_probe": drivers}, indent=2), flush=True)
-    # Rewriting pyvenv.cfg without --system-site-packages removes inheritance when
-    # upgrading an environment made by the previous bootstrap.
-    subprocess.run([sys.executable, "-m", "venv", str(environment)], check=True)
-    configuration = (environment / "pyvenv.cfg").read_text().lower()
-    if "include-system-site-packages = false" not in configuration:
-        raise RuntimeError("Training interpreter still inherits system packages; use a fresh path")
-    python = str(environment / "bin/python")
     requirements = profile_dir / ("requirements-qlora.txt" if qlora else "requirements.txt")
     child_env = os.environ.copy()
     child_env.pop("PYTHONPATH", None)
     child_env["PYTHONNOUSERSITE"] = "1"
+    python = create_environment(environment, child_env)
     subprocess.run(
         [
             python,
@@ -95,6 +121,7 @@ def bootstrap(environment: Path, qlora: bool) -> None:
         "driver_probe": drivers,
         "qlora": qlora,
         "requirements_sha256": hashlib.sha256(requirements.read_bytes()).hexdigest(),
+        "bootstrap_pip_version": BOOTSTRAP_PIP_VERSION,
     }
     (environment / "sllm-environment.json").write_text(json.dumps(metadata, indent=2) + "\n")
     print(f"CUDA training environment ready: {python}", flush=True)

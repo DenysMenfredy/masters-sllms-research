@@ -48,3 +48,8 @@ CUDA profile repair references:
   driver/runtime compatibility, including newer drivers running older runtimes.
 - [bitsandbytes installation](https://huggingface.co/docs/bitsandbytes/installation):
   CUDA 12.6 support and NF4 hardware requirements. GPU execution still needs a pilot.
+- [Python 3.12 venv](https://docs.python.org/3.12/library/venv.html):
+  `--without-pip` skips the default `ensurepip` invocation and existing directories
+  are reused.
+- [pip interpreter selection](https://pip.pypa.io/en/stable/topics/python-option/):
+  pip 22.3+ can manage another interpreter, including a venv without pip installed.

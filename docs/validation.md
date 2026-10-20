@@ -78,3 +78,20 @@ checks NF4 backpropagation. Those GPU checks cannot run on this local host and m
 pass in Colab before loading a candidate checkpoint. A concrete exception from the
 original failed session was not supplied; the dependency/isolation repair does not
 claim to reproduce that unknown traceback.
+
+## Colab ensurepip repair checks
+
+The supplied A100 traceback passes the driver probe, then fails when Python 3.12's
+`venv` invokes `ensurepip`, before training dependencies are installed. Setup now
+creates the environment with `--without-pip` and uses the notebook's pip `--python`
+option to seed pinned pip 26.2 into it. The CUDA dependency profile is unchanged.
+
+`make check` passes Ruff lint/format and 43 tests; the optional ML integration test
+skips in the lightweight environment. Regression coverage checks reuse of a partial
+environment and prevents the failing default `ensurepip` invocation.
+
+A real temporary Python 3.11 environment was created without pip, seeded through
+the new helper, checked with `pip check`, and bootstrapped again successfully.
+The check confirmed interpreter isolation and no inherited Torch, then removed the
+temporary environment. This validates environment creation and reruns; Python 3.12
+on the user's Colab image and actual CUDA execution still require their setup run.
